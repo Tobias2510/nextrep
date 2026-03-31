@@ -33,7 +33,7 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
       <DrawerTrigger asChild>
         <Button
           type="button"
-          className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary transition-colors hover:bg-primary/25"
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/15 text-base font-semibold text-primary transition-colors hover:bg-primary/25"
         >
           {initial}
         </Button>
