@@ -31,6 +31,7 @@ import { AddSessionDrawer } from "./add-session-drawer";
 import { toast } from "sonner";
 import { deleteSession } from "@/actions/session";
 import { Spinner } from "../ui/spinner";
+import { useRouter } from "next/navigation";
 
 type Session = {
   id: string;
@@ -72,6 +73,8 @@ function SessionCard({ session }: { session: Session }) {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const router = useRouter();
+
   async function handleDelete() {
     setLoading(true);
     try {
@@ -85,7 +88,10 @@ function SessionCard({ session }: { session: Session }) {
   }
 
   return (
-    <Card className="bg-muted/40 hover:bg-muted/60 active:bg-muted/80 cursor-pointer border-0 ring-0 transition-colors">
+    <Card
+      onClick={() => router.push(`/session/${session.id}`)}
+      className="bg-muted/40 hover:bg-muted/60 active:bg-muted/80 cursor-pointer border-0 ring-0 transition-colors"
+    >
       <CardHeader className="items-center">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-lg">

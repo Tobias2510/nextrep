@@ -25,7 +25,7 @@ export async function createSession(data: { name: string }) {
     userId: session.user.id,
   });
 
-  revalidatePath("/home");
+  revalidatePath("/sessions");
 }
 
 const idSchema = z.uuid();
@@ -43,5 +43,5 @@ export async function deleteSession(sessionId: string) {
 
   await db.delete(trainingSession).where(eq(trainingSession.id, parsed));
 
-  revalidatePath("/home");
+  revalidatePath("/sessions");
 }

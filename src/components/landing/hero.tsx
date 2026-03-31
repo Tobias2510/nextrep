@@ -71,7 +71,7 @@ export function Hero() {
           className="mt-8 flex flex-col gap-3 sm:flex-row"
         >
           <Button size="lg" asChild className="px-6">
-            <Link href="/home">
+            <Link href="/sessions">
               Get Started
               <ArrowRight className="ml-1 size-4" />
             </Link>

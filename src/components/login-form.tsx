@@ -43,14 +43,14 @@ export function LoginForm({
         password: formdata.password,
       },
       {
-        onRequest: (ctx) => {
+        onRequest: () => {
           setLoading(true);
         },
-        onResponse: (ctx) => {
+        onResponse: () => {
           setLoading(false);
         },
-        onSuccess: (ctx) => {
-          router.push("/home");
+        onSuccess: () => {
+          window.location.href = "/sessions";
         },
         onError: (ctx) => {
           form.setError("root", { message: ctx.error.message });
