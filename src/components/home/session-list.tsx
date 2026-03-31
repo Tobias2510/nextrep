@@ -1,18 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardAction, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Drawer,
-  DrawerTrigger,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
-import { MoreHorizontal, Pencil, Trash2, Dumbbell } from "lucide-react";
+import {
+  BicepsFlexed,
+  Dumbbell,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
 import { AddSessionDrawer } from "./add-session-drawer";
 
 type Session = {
@@ -23,10 +37,20 @@ type Session = {
 export function SessionList({ sessions }: { sessions: Session[] }) {
   if (sessions.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-muted-foreground">No sessions yet.</p>
-        <AddSessionDrawer />
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <BicepsFlexed />
+          </EmptyMedia>
+          <EmptyTitle>No Training Sessions</EmptyTitle>
+          <EmptyDescription>
+            You did not created any training sessions, yet.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <AddSessionDrawer />
+        </EmptyContent>
+      </Empty>
     );
   }
 
