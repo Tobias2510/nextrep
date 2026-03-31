@@ -30,7 +30,7 @@ import { AddExerciseDrawer } from "./add-exercise-drawer";
 import { toast } from "sonner";
 import { deleteExercise } from "@/actions/exercise";
 import { Spinner } from "../ui/spinner";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Exercise = {
   id: string;
@@ -88,10 +88,7 @@ function ExerciseCard({
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const router = useRouter();
-
-  async function handleDelete(e: React.MouseEvent) {
-    e.stopPropagation();
+  async function handleDelete() {
     setLoading(true);
     try {
       await deleteExercise(exercise.id, sessionId);
@@ -104,12 +101,13 @@ function ExerciseCard({
   }
 
   return (
-    <Card
-      onClick={() =>
-        router.push(`/sessions/${sessionId}/${exercise.id}`)
-      }
-      className="bg-muted/40 hover:bg-muted/60 active:bg-muted/80 cursor-pointer border-0 ring-0 transition-colors"
-    >
+    <Card className="relative bg-muted/40 hover:bg-muted/60 active:bg-muted/80 cursor-pointer border-0 ring-0 transition-colors">
+      <Link
+        href={`/sessions/${sessionId}/${exercise.id}`}
+        className="absolute inset-0 z-0"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
       <CardHeader className="items-center">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-lg">
@@ -117,14 +115,10 @@ function ExerciseCard({
           </div>
           <CardTitle>{exercise.name}</CardTitle>
         </div>
-        <CardAction className="self-center">
+        <CardAction className="relative z-10 self-center">
           <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <Button variant="ghost" size="icon">
                 <MoreHorizontal className="size-5" />
                 <span className="sr-only">Actions</span>
               </Button>
@@ -139,10 +133,7 @@ function ExerciseCard({
                 <button
                   type="button"
                   className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpen(false);
-                  }}
+                  onClick={() => setOpen(false)}
                 >
                   <Pencil className="text-muted-foreground size-4" />
                   Edit
