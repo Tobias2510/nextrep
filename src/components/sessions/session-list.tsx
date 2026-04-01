@@ -6,6 +6,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -29,7 +30,8 @@ import {
 import { useState } from "react";
 import { AddSessionDrawer } from "./add-session-drawer";
 import { toast } from "sonner";
-import { deleteSession } from "@/actions/session";
+import { deleteSession, renameSession } from "@/actions/session";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "../ui/spinner";
 import Link from "next/link";
 
@@ -70,8 +72,28 @@ export function SessionList({ sessions }: { sessions: Session[] }) {
 }
 
 function SessionCard({ session }: { session: Session }) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(session.name);
+
+  async function handleRename() {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === session.name) {
+      setEditing(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      await renameSession({ sessionId: session.id, name: trimmed });
+      toast.success("Session renamed");
+      setOpen(false);
+    } catch {
+      toast.error("Failed to rename the session.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleDelete() {
     setLoading(true);
@@ -101,7 +123,16 @@ function SessionCard({ session }: { session: Session }) {
           <CardTitle>{session.name}</CardTitle>
         </div>
         <CardAction className="relative z-10 self-center">
-          <Drawer open={open} onOpenChange={setOpen}>
+          <Drawer
+            open={open}
+            onOpenChange={(isOpen) => {
+              setOpen(isOpen);
+              if (!isOpen) {
+                setEditing(false);
+                setName(session.name);
+              }
+            }}
+          >
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="size-5" />
@@ -109,36 +140,66 @@ function SessionCard({ session }: { session: Session }) {
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <DrawerHeader className="text-left">
-                <DrawerTitle>{session.name}</DrawerTitle>
-                <DrawerDescription>Session options</DrawerDescription>
-              </DrawerHeader>
-
-              <nav className="flex flex-col gap-1 px-4 pb-4">
-                <button
-                  type="button"
-                  className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  <Pencil className="text-muted-foreground size-4" />
-                  Edit
-                </button>
-                <Separator />
-                <button
-                  type="button"
-                  className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
-                  onClick={handleDelete}
-                >
-                  {loading ? (
-                    <Spinner />
-                  ) : (
-                    <>
-                      <Trash2 className="size-4" />
-                      Delete
-                    </>
-                  )}
-                </button>
-              </nav>
+              {editing ? (
+                <>
+                  <DrawerHeader className="text-left">
+                    <DrawerTitle>Rename Session</DrawerTitle>
+                    <DrawerDescription>
+                      Give your session a new name.
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <div className="px-4">
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleRename();
+                      }}
+                      placeholder="e.g. Upper Body"
+                      autoFocus
+                      maxLength={50}
+                    />
+                  </div>
+                  <DrawerFooter>
+                    <Button disabled={loading} onClick={handleRename}>
+                      {loading && <Spinner />}
+                      Save
+                    </Button>
+                  </DrawerFooter>
+                </>
+              ) : (
+                <>
+                  <DrawerHeader className="text-left">
+                    <DrawerTitle>{session.name}</DrawerTitle>
+                    <DrawerDescription>Session options</DrawerDescription>
+                  </DrawerHeader>
+                  <nav className="flex flex-col gap-1 px-4 pb-4">
+                    <button
+                      type="button"
+                      className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
+                      onClick={() => setEditing(true)}
+                    >
+                      <Pencil className="text-muted-foreground size-4" />
+                      Edit
+                    </button>
+                    <Separator />
+                    <button
+                      type="button"
+                      className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
+                      onClick={handleDelete}
+                    >
+                      {loading ? (
+                        <Spinner />
+                      ) : (
+                        <>
+                          <Trash2 className="size-4" />
+                          Delete
+                        </>
+                      )}
+                    </button>
+                  </nav>
+                </>
+              )}
             </DrawerContent>
           </Drawer>
         </CardAction>

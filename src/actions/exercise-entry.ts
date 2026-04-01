@@ -2,12 +2,12 @@
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db-connection";
-import { exerciseEntry } from "@/db/schema";
+import { exercise, exerciseEntry, trainingSession } from "@/db/schema";
 import { exerciseEntrySchema } from "@/lib/validation/exercise-entry-schema";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import z from "zod/v4";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function createExerciseEntry(data: {
   exerciseId: string;
@@ -23,6 +23,21 @@ export async function createExerciseEntry(data: {
   }
 
   const parsed = exerciseEntrySchema.parse(data);
+
+  const [owned] = await db
+    .select({ id: exercise.id })
+    .from(exercise)
+    .innerJoin(trainingSession, eq(exercise.sessionId, trainingSession.id))
+    .where(
+      and(
+        eq(exercise.id, parsed.exerciseId),
+        eq(trainingSession.userId, session.user.id),
+      ),
+    );
+
+  if (!owned) {
+    throw new Error("Unauthorized");
+  }
 
   await db.insert(exerciseEntry).values({
     exerciseId: parsed.exerciseId,
@@ -49,6 +64,22 @@ export async function deleteExerciseEntry(
 
   const parsedId = idSchema.parse(entryId);
   idSchema.parse(exerciseId);
+
+  const [owned] = await db
+    .select({ id: exerciseEntry.id })
+    .from(exerciseEntry)
+    .innerJoin(exercise, eq(exerciseEntry.exerciseId, exercise.id))
+    .innerJoin(trainingSession, eq(exercise.sessionId, trainingSession.id))
+    .where(
+      and(
+        eq(exerciseEntry.id, parsedId),
+        eq(trainingSession.userId, session.user.id),
+      ),
+    );
+
+  if (!owned) {
+    throw new Error("Unauthorized");
+  }
 
   await db.delete(exerciseEntry).where(eq(exerciseEntry.id, parsedId));
 

@@ -6,6 +6,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -28,7 +29,8 @@ import {
 import { useState } from "react";
 import { AddExerciseDrawer } from "./add-exercise-drawer";
 import { toast } from "sonner";
-import { deleteExercise } from "@/actions/exercise";
+import { deleteExercise, renameExercise } from "@/actions/exercise";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "../ui/spinner";
 import Link from "next/link";
 
@@ -87,8 +89,32 @@ function ExerciseCard({
   exercise: Exercise;
   sessionId: string;
 }) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(exercise.name);
+
+  async function handleRename() {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === exercise.name) {
+      setEditing(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      await renameExercise({
+        exerciseId: exercise.id,
+        sessionId,
+        name: trimmed,
+      });
+      toast.success("Exercise renamed");
+      setOpen(false);
+    } catch {
+      toast.error("Failed to rename the exercise.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleDelete() {
     setLoading(true);
@@ -125,7 +151,16 @@ function ExerciseCard({
           </div>
         </div>
         <CardAction className="relative z-10 self-center">
-          <Drawer open={open} onOpenChange={setOpen}>
+          <Drawer
+            open={open}
+            onOpenChange={(isOpen) => {
+              setOpen(isOpen);
+              if (!isOpen) {
+                setEditing(false);
+                setName(exercise.name);
+              }
+            }}
+          >
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="size-5" />
@@ -133,36 +168,66 @@ function ExerciseCard({
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <DrawerHeader className="text-left">
-                <DrawerTitle>{exercise.name}</DrawerTitle>
-                <DrawerDescription>Exercise options</DrawerDescription>
-              </DrawerHeader>
-
-              <nav className="flex flex-col gap-1 px-4 pb-4">
-                <button
-                  type="button"
-                  className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  <Pencil className="text-muted-foreground size-4" />
-                  Edit
-                </button>
-                <Separator />
-                <button
-                  type="button"
-                  className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
-                  onClick={handleDelete}
-                >
-                  {loading ? (
-                    <Spinner />
-                  ) : (
-                    <>
-                      <Trash2 className="size-4" />
-                      Delete
-                    </>
-                  )}
-                </button>
-              </nav>
+              {editing ? (
+                <>
+                  <DrawerHeader className="text-left">
+                    <DrawerTitle>Rename Exercise</DrawerTitle>
+                    <DrawerDescription>
+                      Give your exercise a new name.
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <div className="px-4">
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleRename();
+                      }}
+                      placeholder="e.g. Bench Press"
+                      autoFocus
+                      maxLength={50}
+                    />
+                  </div>
+                  <DrawerFooter>
+                    <Button disabled={loading} onClick={handleRename}>
+                      {loading && <Spinner />}
+                      Save
+                    </Button>
+                  </DrawerFooter>
+                </>
+              ) : (
+                <>
+                  <DrawerHeader className="text-left">
+                    <DrawerTitle>{exercise.name}</DrawerTitle>
+                    <DrawerDescription>Exercise options</DrawerDescription>
+                  </DrawerHeader>
+                  <nav className="flex flex-col gap-1 px-4 pb-4">
+                    <button
+                      type="button"
+                      className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
+                      onClick={() => setEditing(true)}
+                    >
+                      <Pencil className="text-muted-foreground size-4" />
+                      Edit
+                    </button>
+                    <Separator />
+                    <button
+                      type="button"
+                      className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors"
+                      onClick={handleDelete}
+                    >
+                      {loading ? (
+                        <Spinner />
+                      ) : (
+                        <>
+                          <Trash2 className="size-4" />
+                          Delete
+                        </>
+                      )}
+                    </button>
+                  </nav>
+                </>
+              )}
             </DrawerContent>
           </Drawer>
         </CardAction>
