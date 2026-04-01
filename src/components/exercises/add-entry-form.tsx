@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   exerciseEntrySchema,
@@ -71,63 +71,37 @@ export function AddEntryForm({
         className="flex flex-col gap-3"
       >
         <div className="grid grid-cols-2 gap-3">
-          <Controller
-            name="weight"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
-                <Input
-                  {...field}
-                  id="weight"
-                  type="number"
-                  step="0.5"
-                  min="0"
-                  placeholder="0"
-                  aria-invalid={fieldState.invalid}
-                  value={field.value ?? ""}
-                  onChange={(e) =>
-                    field.onChange(
-                      e.target.value === ""
-                        ? undefined
-                        : Number(e.target.value),
-                    )
-                  }
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+          <Field data-invalid={!!form.formState.errors.weight}>
+            <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
+            <Input
+              {...form.register("weight", { valueAsNumber: true })}
+              id="weight"
+              type="number"
+              step="0.5"
+              min="0"
+              placeholder="0"
+              defaultValue={lastWeight}
+              aria-invalid={!!form.formState.errors.weight}
+            />
+            {form.formState.errors.weight && (
+              <FieldError errors={[form.formState.errors.weight]} />
             )}
-          />
-          <Controller
-            name="reps"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="reps">Reps</FieldLabel>
-                <Input
-                  {...field}
-                  id="reps"
-                  type="number"
-                  min="1"
-                  placeholder="0"
-                  aria-invalid={fieldState.invalid}
-                  value={field.value ?? ""}
-                  onChange={(e) =>
-                    field.onChange(
-                      e.target.value === ""
-                        ? undefined
-                        : Number(e.target.value),
-                    )
-                  }
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+          </Field>
+          <Field data-invalid={!!form.formState.errors.reps}>
+            <FieldLabel htmlFor="reps">Reps</FieldLabel>
+            <Input
+              {...form.register("reps", { valueAsNumber: true })}
+              id="reps"
+              type="number"
+              min="1"
+              placeholder="0"
+              defaultValue={lastReps}
+              aria-invalid={!!form.formState.errors.reps}
+            />
+            {form.formState.errors.reps && (
+              <FieldError errors={[form.formState.errors.reps]} />
             )}
-          />
+          </Field>
         </div>
         {form.formState.errors.root && (
           <FieldError errors={[form.formState.errors.root]} />
