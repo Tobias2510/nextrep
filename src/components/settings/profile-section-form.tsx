@@ -57,7 +57,7 @@ export default function ProfileSection({
         newEmail: data.email,
       });
       if (error) throw error;
-      toast.success("Email updated");
+      toast.success("If that email is available, it has been updated.");
     } catch {
       toast.error("Failed to update email.");
     } finally {

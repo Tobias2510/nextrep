@@ -18,7 +18,7 @@ export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, "Current password is required."),
+    currentPassword: z.string().min(8, "Current password is required."),
     newPassword: z
       .string()
       .min(8, "Password must be at least 8 characters.")
