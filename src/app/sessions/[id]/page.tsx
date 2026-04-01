@@ -72,7 +72,7 @@ export default async function SessionDetailPage({
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/sessions">
-                <ChevronLeft />
+                <ChevronLeft className="size-5" />
                 <span className="sr-only">Back to sessions</span>
               </Link>
             </Button>

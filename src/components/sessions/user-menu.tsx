@@ -14,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Settings, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export function UserMenu({ name, email }: { name: string; email: string }) {
   const router = useRouter();
@@ -56,13 +57,14 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
         <Separator />
 
         <nav className="flex flex-col gap-1 px-4 py-2">
-          <button
-            type="button"
+          <Link
+            href="/settings"
+            onClick={() => setOpen(false)}
             className="text-foreground hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
           >
             <Settings className="text-muted-foreground size-4" />
             Settings
-          </button>
+          </Link>
         </nav>
 
         <Separator />

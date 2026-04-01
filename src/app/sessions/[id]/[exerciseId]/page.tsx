@@ -66,7 +66,7 @@ export default async function ExercisePage({
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild>
               <Link href={`/sessions/${sessionId}`}>
-                <ChevronLeft />
+                <ChevronLeft className="size-5" />
                 <span className="sr-only">Back to exercises</span>
               </Link>
             </Button>
