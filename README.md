@@ -41,9 +41,12 @@ A fitness tracker app for logging workouts, tracking progress, and hitting perso
    BETTER_AUTH_SECRET=<random-secret>
    BETTER_AUTH_URL=http://localhost:3000
    USE_NEON=false
+   SHOW_PERSONAL_USE_BANNER=true
    ```
 
    Set `USE_NEON=true` to use the Neon serverless HTTP driver instead of the standard `pg` Pool.
+
+   Set `SHOW_PERSONAL_USE_BANNER=true` to display a "personal use only" banner on the landing page.
 
 4. **Run database migrations:**
 
