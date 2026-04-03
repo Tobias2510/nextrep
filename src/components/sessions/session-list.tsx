@@ -87,6 +87,7 @@ function SessionCard({ session }: { session: Session }) {
     try {
       await renameSession({ sessionId: session.id, name: trimmed });
       toast.success("Session renamed");
+      setEditing(false);
       setOpen(false);
     } catch {
       toast.error("Failed to rename the session.");

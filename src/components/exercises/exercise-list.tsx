@@ -108,6 +108,7 @@ function ExerciseCard({
         name: trimmed,
       });
       toast.success("Exercise renamed");
+      setEditing(false);
       setOpen(false);
     } catch {
       toast.error("Failed to rename the exercise.");
